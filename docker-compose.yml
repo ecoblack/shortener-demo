@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:10
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "54320:5432"
+    volumes:
+      - ./horizoom-url-api-data:/var/lib/postgresql/data
+  app: &app
+    build: .
+    volumes:
+      - .:/horizoom-url-api
+      - bundle_path:/bundle
+    environment:
+      - SHORTENER_DATABASE_PASSWORD=3314ewm$fsdkm
+      - RAILS_ENV=development
+      - BUNDLE_PATH=/bundle/vendor
+      - PGHOST=db
+      - PGDATABASE=shortener_development
+      - PGUSER=postgres
+      - REDIS_URL=redis://redis_db:6379
+    command: bash -c "bundle exec rails s -p 3000 -b '0.0.0.0'"
+    tty: true
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    links:
+      - db
+    depends_on:
+      - db # to ensure we have a DB before starting
+  front:
+    build: ./front-end
+    volumes:
+      - ./front-end:/horizoom-url-front
+      - front_node_modules:/horizoom-url-front/node_modules
+    ports:
+      - "8080:8080"
+    command: npm run serve
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  bundle_path:
+  db:
+  front_node_modules:
