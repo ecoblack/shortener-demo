@@ -13,7 +13,7 @@ horizoom-url-api-data
 /tmp/*
 !/log/.keep
 !/tmp/.keep
-
+/front-end/node_modules
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
 !/tmp/pids/
